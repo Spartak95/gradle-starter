@@ -1,3 +1,5 @@
+import java.time.LocalDate
+
 plugins {
     id 'java'
 }
@@ -17,6 +19,21 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
+ext {
+    javaVersion = 21
+    currentDate = LocalDate.now()
+}
+
+println project.ext.javaVersion
+println ext.javaVersion
+println javaVersion
+//println project."projectParam1"
+println project.javaVersion
+println "---- All properties."
+println project.properties
+//println "---- System properties."
+//println System.getProperty("sys.example")
 
 println "configuration phase"
 println "gradle id: ${gradle.hashCode()}"
