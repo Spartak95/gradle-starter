@@ -1,5 +1,3 @@
-import java.time.LocalDate
-
 plugins {
     id 'java'
 }
@@ -7,168 +5,51 @@ plugins {
 group = 'com.xcoder'
 version = '1.0-SNAPSHOT'
 
-repositories {
-    mavenCentral()
-}
+apply from: 'script.gradle'
+apply plugin: CustomPlugin
+apply plugin: 'java'
 
-dependencies {
-    testImplementation platform('org.junit:junit-bom:5.9.1')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-}
+sourceSets {
+    main {
+       java {
+           //srcDir "$buildDir/generated-sources/querydsl"
+       }
 
-test {
-    useJUnitPlatform()
-}
-
-ext {
-    javaVersion = 21
-    currentDate = LocalDate.now()
-}
-
-println project.ext.javaVersion
-println ext.javaVersion
-println javaVersion
-//println project."projectParam1"
-println project.javaVersion
-println "---- All properties."
-println project.properties
-//println "---- System properties."
-//println System.getProperty("sys.example")
-
-println "configuration phase"
-println "gradle id: ${gradle.hashCode()}"
-println "root: ${rootProject.hashCode()}, ${project.hashCode()}, ${gradle.rootProject.hashCode()}"
-
-//tasks.findByName("hello")
-
-// ==================== 1
-//hello.description = "Hello task"
-//hello.group = "xcoder"
-
-// ==================== 2
-// hello.configure Closure
-//hello {
-//    println "Configuration phase."
-//    description = "Hello task"
-//    group = "xcoder"
-//}
-
-// ==================== 3
-//task("hello") {
-//    println "Configuration phase."
-//    description = "Hello task"
-//    group = "xcoder"
-//}
-
-// ==================== 4
-//task "hello" {
-//    println "Configuration phase."
-//    description = "Hello task"
-//    group = "xcoder"
-//}
-
-// ==================== 5
-//task hello {
-//    println "Configuration phase."
-//    description = "Hello task"
-//    group = "xcoder"
-//}
-
-//def map = ["description": "Hello task", "group" : "xcoder"];
-//task(map, "hello") {
-//    println "Configuration phase."
-//    println "task: $description, group: $group, actions: ${actions.size()}"
-//}
-
-//task hello2 (description: "Hello task", group : "xcoder", type: DefaultTask) {
-//    println "Configuration phase."
-//    println "task: $description, group: $group, actions: ${actions.size()}"
-//}
-
-// Project -> [Task1, Task2, ...]
-// Task -> [Action1, Action2, ...] -> action.execution (execution phase)
-
-task hello ("description": "Hello task", "group" : "xcoder") {
-    println "Configuration phase."
-    println "task: $description, group: $group, actions: ${actions.size()}"
-
-    doLast {
-        println "execution phase, Action1"
+//       resources {
+//
+//       }
     }
 
-    doFirst {
-        println "execution phase, Action2"
-    }
+    test {
 
-    doLast {
-        println "execution phase, Action3"
-    }
-
-    println "task: $description, group: $group, actions: ${actions.size()}"
-    println "path task: ${path}"
-}
-
-//gradle.taskGraph.allTasks
-
-task first {
-    doLast {
-        println "Task 1"
     }
 }
 
-task second {
-    doLast {
-        println "Task 2"
+// buildSrc --- id 'custom'
+class CustomPlugin implements Plugin<Project> {
+
+    @Override
+    void apply(Project project) {
+        def map = ["description": "Hello task", "group": "xcoder", "type": DefaultTask]
+
+        project.task(map, "hello") {
+            println "Configuration phase."
+            println "task: $description, group: $group, actions: ${actions.size()}"
+
+            doLast {
+                println "execution phase, Action1"
+            }
+
+            doFirst {
+                println "execution phase, Action2"
+            }
+
+            doLast {
+                println "execution phase, Action3"
+            }
+
+            println "task: $description, group: $group, actions: ${actions.size()}"
+            println "path task: ${path}"
+        }
     }
 }
-
-
-task third {
-    doLast {
-        println "Task 3"
-    }
-}
-
-task fourth(group: "xcoder") {
-//    dependsOn()
-    
-    doLast {
-        println "Task 4"
-    }
-}
-
-// 2 <--- 4
-// fourth.dependsOn second
-// second.dependsOn first // այսինքն մինչև second task-ի կատարվելը պետք է կատարվի first task-ը
-// second.finalizedBy third // այսինքն մինչև third task-ի կատարվելը պետք է կատարվի second task-ը
-
-// task-երի կատարման հաջորդականություն է, այլ ոչ թե կախվածություն է
-fourth.dependsOn first
-fourth.dependsOn second
-fourth.dependsOn third
-
-first.mustRunAfter second
-//second.shouldRunAfter first
-
-// whenReady is callback method
-gradle.taskGraph.whenReady {TaskExecutionGraph graph ->
-    println "--- Graph:"
-
-    graph.allTasks.each {
-        println "${it.name}"
-    }
-}
-
-gradle.taskGraph.beforeTask {Task task ->
-    if(task.group == 'xcoder') {
-        println "beforeTask callBack $task"
-    }
-}
-
-gradle.taskGraph.afterTask {Task task ->
-    if(task.name == 'first') {
-        println "afterTask callBack $task"
-    }
-}
-
-defaultTasks "second"
