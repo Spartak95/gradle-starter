@@ -9,20 +9,68 @@ apply from: 'script.gradle'
 apply plugin: CustomPlugin
 apply plugin: 'java'
 
-sourceSets {
-    main {
-       java {
-           //srcDir "$buildDir/generated-sources/querydsl"
-       }
+//sourceSets {
+//    main {
+//        java {
+            //srcDir "$buildDir/generated-sources/querydsl"
+//        }
 
 //       resources {
 //
 //       }
+//    }
+//
+//    test {
+//
+//    }
+//}
+
+repositories {
+    // ~/.gradle/caches --offline
+    // mavenLocal() // ~/m2/repository
+//    maven {
+//        name "nexus dmdev"
+//        uri "https://"
+//    }
+    mavenCentral()
+    //flatDir {}
+}
+
+configurations {
+    Configuration configurationImpl = getByName("implementation")
+
+    xcoder {
+        description = "xcoder configuration"
     }
 
-    test {
+    configurationImpl.extendsFrom(xcoder)
+}
 
-    }
+//configurations.configureEach {
+//    resolutionStrategy {
+//        force('org.springframework:spring-aop:5.3.8')
+//    }
+//}
+
+dependencies {
+    compileOnly platform("org.springframework:spring-boot-dependencies:2.5.3")
+    implementation "org.springframework:spring-webmvc"
+
+    //add('implementation', [group: "org.springframework", name: "spring-webmvc", version: "5.3.9"])
+    //add('implementation', "org.springframework:spring-webmvc:5.3.9")
+//    implementation "org.springframework:spring-webmvc:5.3.9"
+//    xcoder "org.springframework:spring-webmvc:5.3.9"
+    //implementation("org.springframework:spring-webmvc:5.3.9") {
+//        transitive(false)
+//        exclude(group: 'org.springframework', module: 'spring-aop')
+    //}
+//    implementation 'org.springframework:spring-aop:5.3.8'
+
+//    all {
+//        resolveStrategy {
+//            force('org.springframework:spring-aop:5.3.8')
+//        }
+//    }
 }
 
 // buildSrc --- id 'custom'
