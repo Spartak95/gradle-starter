@@ -7,7 +7,12 @@ version = '1.0-SNAPSHOT'
 
 apply from: 'script.gradle'
 apply plugin: CustomPlugin
-apply plugin: 'java'
+//apply plugin: 'java'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 //sourceSets {
 //    main {
@@ -53,8 +58,9 @@ configurations {
 //}
 
 dependencies {
-    compileOnly platform("org.springframework:spring-boot-dependencies:2.5.3")
-    implementation "org.springframework:spring-webmvc"
+//    compileOnly platform("org.springframework:spring-boot-dependencies:2.5.3")
+    compileOnly "jakarta.servlet:jakarta.servlet-api:5.0.0"
+    implementation "org.springframework:spring-webmvc:5.3.9"
 
     //add('implementation', [group: "org.springframework", name: "spring-webmvc", version: "5.3.9"])
     //add('implementation', "org.springframework:spring-webmvc:5.3.9")
@@ -72,6 +78,39 @@ dependencies {
 //        }
 //    }
 }
+
+//configurations.runtimeClasspath.files.each {println it}
+
+jar {
+    def jars = configurations.runtimeClasspath.files.collect {"lib/$it.name"}
+
+    manifest {
+        attributes 'Main-Class': 'com.xcoder.HelloWorld', 'Class-Path': jars.join(' ')
+    }
+//
+//    duplicatesStrategy(DuplicatesStrategy.EXCLUDE)
+//
+//    from (configurations.runtimeClasspath.files.collect {zipTree(it)})
+}
+
+war {
+    archiveName "xcoder.war"
+}
+
+task deployTomcat(type: Copy) {
+    from(war.archiveFile.get())
+    into("/Users/dmatveyenka/Downloads/apache-tomcat-10.0.8/webapps")
+}
+
+deployTomcat.dependsOn war
+assemble.dependsOn deployTomcat
+
+task copyAllDependecies(type: Copy) {
+    from(configurations.runtimeClasspath.files)
+    into("$buildDir/libs/lib")
+}
+
+jar.dependsOn copyAllDependecies
 
 // buildSrc --- id 'custom'
 class CustomPlugin implements Plugin<Project> {
