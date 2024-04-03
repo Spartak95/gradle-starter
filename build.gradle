@@ -2,8 +2,24 @@ plugins {
     id 'java'
 }
 
-group = 'com.xcoder'
-version = '1.0-SNAPSHOT'
+allprojects {
+    group = 'com.xcoder'
+    version = '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+
+}
+
+project(":database") {
+    repositories {
+        mavenCentral()
+    }
+}
 
 apply from: 'script.gradle'
 apply plugin: CustomPlugin
@@ -30,16 +46,16 @@ java {
 //    }
 //}
 
-repositories {
+//repositories {
     // ~/.gradle/caches --offline
     // mavenLocal() // ~/m2/repository
 //    maven {
-//        name "nexus dmdev"
+//        name "nexus xcoder"
 //        uri "https://"
 //    }
-    mavenCentral()
+//    mavenCentral()
     //flatDir {}
-}
+//}
 
 configurations {
     Configuration configurationImpl = getByName("implementation")
@@ -93,17 +109,17 @@ jar {
 //    from (configurations.runtimeClasspath.files.collect {zipTree(it)})
 }
 
-war {
-    archiveName "xcoder.war"
-}
+//war {
+//    archiveName "xcoder.war"
+//}
 
-task deployTomcat(type: Copy) {
-    from(war.archiveFile.get())
-    into("/Users/dmatveyenka/Downloads/apache-tomcat-10.0.8/webapps")
-}
-
-deployTomcat.dependsOn war
-assemble.dependsOn deployTomcat
+//task deployTomcat(type: Copy) {
+//    from(war.archiveFile.get())
+//    into("/Users/dmatveyenka/Downloads/apache-tomcat-10.0.8/webapps")
+//}
+//
+//deployTomcat.dependsOn war
+//assemble.dependsOn deployTomcat
 
 task copyAllDependecies(type: Copy) {
     from(configurations.runtimeClasspath.files)
