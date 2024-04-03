@@ -1,5 +1,9 @@
+import com.xcoder.task.ReleaseTask
+
 plugins {
     id 'java-library'
+    id 'jacoco'
+    id 'custom-xcoder'
 }
 
 group = 'com.xcoder'
@@ -16,6 +20,19 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+ext {
+    release = false
+}
+
 test {
+    maxParallelForks 3
     useJUnitPlatform()
+}
+
+test.finalizedBy jacocoTestReport
+jacocoTestReport.dependsOn test
+
+task makeRelease(type: ReleaseTask) {
+    release = project.release
+    releaseFile = new File("$rootDir/script.gradle")
 }
